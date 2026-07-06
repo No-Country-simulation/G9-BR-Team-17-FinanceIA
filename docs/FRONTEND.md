@@ -8,10 +8,10 @@
 
 | Tecnologia | Versão | Finalidade |
 |---|---|---|
-| React | 18+ | Biblioteca de UI |
+| React | 19+ | Biblioteca de UI |
 | TypeScript | 5+ | Tipagem estática |
-| Vite | 5+ | Build tool e dev server |
-| React Router | 6+ | Roteamento |
+| Vite | 7+ | Build tool e dev server |
+| React Router | 7+ | Roteamento |
 | Bootstrap ou Tailwind | - | Estilização (a definir pela equipe) |
 | MSW | 2+ | Mock de API nos testes |
 | Vitest | 1+ | Testes unitários e de integração |
@@ -227,13 +227,14 @@ export default defineConfig({
             "/api": {
                 target: "http://api:8080",
                 changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, ""),
             },
         },
     },
 });
 ```
 
-O frontend faz requisições para `/api/analise-financeira` e o Vite redireciona para o Spring Boot. Não há problemas de CORS durante o desenvolvimento.
+O frontend faz requisicoes para `/api/analise-financeira` e o Vite redireciona para o Spring Boot removendo o prefixo `/api`, de forma que a chamada chega como `/analise-financeira` no backend. Sem a funcao `rewrite`, o Vite encaminharia o caminho completo com `/api`, causando 404. Em producao, o Nginx faz o mesmo papel com `proxy_pass http://api:8080/` (barra no final remove o prefixo automaticamente).
 
 ---
 
@@ -263,7 +264,7 @@ server {
 ### Dockerfile (desenvolvimento)
 
 ```dockerfile
-FROM node:20-alpine
+FROM node:24-alpine
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
@@ -275,7 +276,7 @@ CMD ["npm", "run", "dev"]
 ### Dockerfile (produção)
 
 ```dockerfile
-FROM node:20-alpine AS build
+FROM node:24-alpine AS build
 WORKDIR /app
 COPY . .
 RUN npm install && npm run build
