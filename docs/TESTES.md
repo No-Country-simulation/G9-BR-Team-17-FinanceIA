@@ -10,7 +10,7 @@ Cada serviço possui sua própria suíte de testes, executada de forma isolada e
 
 ```
 comando único:
-docker-compose -f docker-compose.test.yml up --abort-on-container-exit
+docker compose -f docker-compose.test.yml up --abort-on-container-exit
 ```
 
 ### 1.1 Pirâmide de Testes
@@ -37,13 +37,14 @@ Testam regras de negócio e validação de forma isolada, sem depender de outros
 class AnalisadorPerfilFinanceiroTest {
     @Test
     void dadoEndividamentoBaixoEPoupancaAlta_deveRetornarSaudavel() {
-        var perfil = analisador.classificar(
-            rendaMensal = 8000,
-            nivelEndividamento = 5,
-            frequenciaPoupanca = "Alta",
-            resumoGastos = Map.of("moradia", 1500)
+        var dados = new AnaliseFinanceiraRequest(
+            8000,           // rendaMensal
+            5,              // nivelEndividamento
+            "Alta",         // frequenciaPoupanca
+            List.of()       // transacoes
         );
-        assertThat(perfil).isEqualTo("Saudavel");
+        var perfil = analisador.classificar(dados);
+        assertThat(perfil.getNome()).isEqualTo("Saudavel");
     }
 }
 ```
@@ -62,6 +63,11 @@ class AnalisadorPerfilFinanceiroTest {
 | `AnaliseValidator` | Descrição vazia | "" | Erro CAMPO_INVALIDO |
 | `AnaliseValidator` | Endividamento > 100 | 150 | Erro CAMPO_INVALIDO |
 | `AnaliseValidator` | Endividamento = 0 | 0 | Válido |
+| `AnaliseValidator` | Endividamento = 100 (comprometimento total) | 100 | Valido (caso de fronteira, secao 8 DICIONARIO) |
+| `AnaliseValidator` | transacoes[].valor = 0 | 0 | Erro VALOR_TRANSACAO_INVALIDO |
+| `AnaliseValidator` | frequencia_poupanca com erro de digitacao | "Mediaa" | Erro ENUM_INVALIDO |
+| `GeradorRecomendacoes` | Descricao "Farmacia e Conveniencia" | - | Priorizar Saude (regra de desambiguacao 3.3) |
+| `GeradorRecomendacoes` | Transacoes com descricao duplicada | Lista ["Supermercado", "Supermercado"] | Cada uma classificada independentemente |
 
 ### 2.2 Testes de Integração (WireMock)
 
@@ -294,18 +300,18 @@ describe("FormTransacoes", () => {
 Testam o fluxo completo da página com a API mockada via MSW (Mock Service Worker).
 
 ```tsx
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 
 const server = setupServer(
-    rest.post("/api/analise-financeira", (req, res, ctx) =>
-        res(ctx.json({
+    http.post("/api/analise-financeira", async ({ request }) => {
+        return HttpResponse.json({
             perfil_financeiro: "Saudavel",
             probabilidade: 0.91,
             resumo_gastos: { moradia: 1500, saude: 120 },
             recomendacoes: ["Manter padrão atual de poupança"]
-        }))
-    )
+        });
+    })
 );
 
 beforeAll(() => server.listen());
@@ -327,11 +333,12 @@ describe("Pagina AnaliseFinanceira", () => {
 
     it("exibe erro quando API retorna 422", async () => {
         server.use(
-            rest.post("/api/analise-financeira", (req, res, ctx) =>
-                res(ctx.status(422), ctx.json({
-                    erro: { codigo: "VALOR_TRANSACAO_INVALIDO", mensagem: "..." }
-                }))
-            )
+            http.post("/api/analise-financeira", async ({ request }) => {
+                return HttpResponse.json(
+                    { erro: { codigo: "VALOR_TRANSACAO_INVALIDO", mensagem: "..." } },
+                    { status: 422 }
+                );
+            })
         );
 
         render(<AnaliseFinanceira />);
@@ -355,19 +362,22 @@ frontend/src/mocks/
 
 ```ts
 // handlers.ts
+import { http, HttpResponse } from "msw";
+
 export const handlers = [
-    rest.post("/api/analise-financeira", (req, res, ctx) => {
-        const body = await req.json();
+    http.post("/api/analise-financeira", async ({ request }) => {
+        const body = await request.json() as AnaliseFinanceiraRequest;
         if (body.renda_mensal <= 0) {
-            return res(ctx.status(422), ctx.json({
-                erro: { codigo: "CAMPO_INVALIDO", campo: "renda_mensal" }
-            }));
+            return HttpResponse.json(
+                { erro: { codigo: "CAMPO_INVALIDO", campo: "renda_mensal" } },
+                { status: 422 }
+            );
         }
-        return res(ctx.json(analiseFinanceiraMock));
+        return HttpResponse.json(analiseFinanceiraMock);
     }),
-    rest.post("/api/classificacao-transacoes", (req, res, ctx) => {
-        return res(ctx.json(classificacaoMock));
-    })
+    http.post("/api/classificacao-transacoes", async () => {
+        return HttpResponse.json(classificacaoMock);
+    }),
 ];
 ```
 
@@ -409,16 +419,16 @@ services:
 
 ```bash
 # Todos os testes
-docker-compose -f docker-compose.test.yml up --abort-on-container-exit
+docker compose -f docker-compose.test.yml up --abort-on-container-exit
 
 # Apenas backend
-docker-compose -f docker-compose.test.yml run api
+docker compose -f docker-compose.test.yml run api
 
 # Apenas ml-service
-docker-compose -f docker-compose.test.yml run ml-service
+docker compose -f docker-compose.test.yml run ml-service
 
 # Apenas frontend
-docker-compose -f docker-compose.test.yml run frontend
+docker compose -f docker-compose.test.yml run frontend
 ```
 
 ---
