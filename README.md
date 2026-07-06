@@ -13,7 +13,7 @@
 Sistema de análise de comportamento financeiro com classificação de transações, perfil financeiro e recomendações personalizadas.
 
 ```
-docker-compose up
+docker compose up
 ├── Frontend (React)   :3000  ← Interface do usuário
 ├── API (Spring Boot)  :8080  ← Regras de negócio + validação
 └── ML Service (FastAPI):8000 ← Classificação com modelo treinado
@@ -175,10 +175,10 @@ Exemplos:
   "resumo_gastos": { 
     "alimentacao": 420, 
     "transporte": 300, 
-    "entretenimento": 40 
+    "lazer": 40 
   }, 
   "recomendacoes": [ 
-    "Monitorar gastos recorrentes de entretenimento", 
+    "Monitorar gastos recorrentes de lazer", 
     "Aumentar reserva financeira mensal" 
   ] 
 } 
@@ -249,7 +249,10 @@ A arquitetura adotada deverá ser documentada pela equipe.
 
 ## OCI
 
-A solução deve utilizar pelo menos um serviço OCI como parte obrigatória do projeto.
+A solucao deve utilizar pelo menos um servico OCI como parte obrigatoria do projeto. A implementacao segue o padrao de interface descrito na ARQUITETURA.md:
+
+- **Dev** (`ARMAZENAMENTO_TIPO=local`): armazenamento em arquivos locais, sem dependencia de nuvem
+- **Producao** (`ARMAZENAMENTO_TIPO=oci`): armazenamento no OCI Object Storage, ativado apenas quando necessario
 
 ---
 
@@ -292,7 +295,7 @@ nidus/
 
 ```bash
 # Sobe todos os serviços
-docker-compose up
+docker compose up
 
 # Acessar:
 # Frontend: http://localhost:3000
@@ -304,21 +307,34 @@ docker-compose up
 
 ```bash
 # Executa todos os testes (backend + ml-service + frontend)
-docker-compose -f docker-compose.test.yml up --abort-on-container-exit
+docker compose -f docker-compose.test.yml up --abort-on-container-exit
 
 # Apenas backend
-docker-compose -f docker-compose.test.yml run api
+docker compose -f docker-compose.test.yml run api
 
 # Apenas ml-service
-docker-compose -f docker-compose.test.yml run ml-service
+docker compose -f docker-compose.test.yml run ml-service
 
 # Apenas frontend
-docker-compose -f docker-compose.test.yml run frontend
+docker compose -f docker-compose.test.yml run frontend
 ```
 
 ---
 
-## Stack Tecnológica
+## Modos de Execução
+
+O sistema suporta dois modos de armazenamento controlados pela variável de ambiente `ARMAZENAMENTO_TIPO`:
+
+| Modo | ARMAZENAMENTO_TIPO | Onde os dados são salvos | Requer OCI? |
+|---|---|---|---|
+| **Dev** | `local` (default) | Diretório `./data/analises/` montado como volume Docker | Nao |
+| **Producao** | `oci` | OCI Object Storage (bucket) | Sim |
+
+Durante o desenvolvimento, todos os membros da equipe rodam em modo `local`. Nenhuma credencial OCI é necessaria. Na apresentacao, ativa-se o modo `oci` para demonstrar a integracao com o bucket real.
+
+---
+
+## Stack Tecnologica
 
 | Camada | Tecnologia | Finalidade |
 |---|---|---|
@@ -326,7 +342,7 @@ docker-compose -f docker-compose.test.yml run frontend
 | API | Java 17 + Spring Boot 3 | Regras de negócio, validação, recomendações |
 | ML Service | Python + FastAPI + Scikit-Learn | Classificação e perfil financeiro |
 | Banco de dados | Nenhum (armazenamento em arquivos JSON) | MVP simula OCI Object Storage |
-| Container | Docker + docker-compose | Ambiente padronizado para toda a equipe |
+| Container | Docker + docker compose | Ambiente padronizado para toda a equipe |
 | Testes (Java) | JUnit 5 + Mockito + WireMock | Testes unitários e de integração |
 | Testes (Python) | pytest + TestClient | Testes do ml-service |
 | Testes (React) | Vitest + React Testing Library + MSW | Testes do frontend |
