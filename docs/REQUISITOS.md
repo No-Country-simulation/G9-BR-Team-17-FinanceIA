@@ -25,7 +25,8 @@ O valor entregue está na capacidade de converter dados dispersos em uma visão 
 
 - Receber e validar dados financeiros de entrada (transações, renda mensal, nível de endividamento, frequência de poupança e demais indicadores relevantes);
 - Classificar automaticamente cada transação em uma categoria financeira pré-definida;
-- Identificar padrões de consumo com base no histórico de transações fornecido;
+- Identificar padrões de consumo com base na distribuição e concentração de gastos dentro de uma única requisição; a leitura de padrões ao longo do tempo depende da implementação opcional de histórico (RF014);
+- Disponibilizar interface gráfica (frontend React) para consumo das funcionalidades por usuários finais;
 - Classificar o perfil financeiro do usuário em categorias de saúde financeira;
 - Gerar indicadores agregados (ex: resumo de gastos por categoria, proporção de comprometimento de renda);
 - Gerar recomendações objetivas vinculadas aos indicadores identificados;
@@ -39,7 +40,7 @@ O valor entregue está na capacidade de converter dados dispersos em uma visão 
 - Conexão direta e automatizada com contas bancárias ou instituições financeiras para captura de extratos;
 - Consultoria financeira individualizada de natureza regulatória (ex: recomendação de produtos de investimento específicos, aconselhamento tributário ou jurídico);
 - Autenticação biométrica ou validação de identidade do usuário;
-- Interfaces gráficas finais de usuário (o escopo está limitado à camada de análise e disponibilização de resultados, não ao aplicativo cliente que os consome);
+- Execução de transações financeiras reais (transferências, pagamentos, investimentos);
 - Definição ou seleção de tecnologias de infraestrutura, armazenamento ou hospedagem (tratadas como decisões de implementação, fora do escopo conceitual deste documento).
 
 ### 1.3 Visão Geral do Fluxo Conceitual
@@ -65,7 +66,7 @@ flowchart TD
 | RF001 | Recepção de dados financeiros | O sistema deve receber dados de entrada contendo renda mensal, nível de endividamento, frequência de poupança e lista de transações (descrição e valor). | Alta |
 | RF002 | Validação de dados de entrada | O sistema deve validar formato, tipo e consistência dos dados recebidos antes de iniciar qualquer processamento analítico. | Alta |
 | RF003 | Classificação automática de transações | O sistema deve classificar cada transação recebida em uma categoria financeira predefinida (ex: Alimentação, Transporte, Saúde, Moradia, Educação, Lazer, Serviços, Outras). | Alta |
-| RF004 | Identificação de padrões de consumo | O sistema deve identificar recorrências e tendências relevantes no comportamento de gastos do usuário a partir do histórico de transações fornecido. | Alta |
+| RF004 | Identificação de padrões de consumo | O sistema deve identificar padrões de consumo com base na distribuição e concentração de gastos nas transações fornecidas em uma única requisição (ex: percentual gasto por categoria, presença de categorias não essenciais acima de um limiar). A identificação de padrões ao longo do tempo depende da implementação de RF014. | Alta |
 | RF005 | Cálculo de indicadores financeiros agregados | O sistema deve gerar indicadores consolidados, como resumo de gastos por categoria e proporção de comprometimento de renda. | Alta |
 | RF006 | Classificação do perfil financeiro | O sistema deve classificar o perfil financeiro do usuário em uma das categorias definidas (ex: Saudável, Em observação, Em risco), com base na combinação de renda, endividamento, poupança e padrão de gastos. | Alta |
 | RF007 | Geração de nível de confiança da classificação | O sistema deve retornar um valor de probabilidade ou confiança associado à classificação do perfil financeiro gerado. | Média |
@@ -231,12 +232,15 @@ Requisitos derivados das decisões arquiteturais do projeto.
 
 | ID | Nome do Requisito | Descrição | Prioridade |
 |---|---|---|---|
-| RA001 | Containerização com Docker | O sistema deve ser executado em containers Docker orquestrados por docker-compose, garantindo ambiente idêntico em todas as máquinas de desenvolvimento. | Alta |
+| RA001 | Containerização com Docker | O sistema deve ser executado em containers Docker orquestrados por docker compose, garantindo ambiente idêntico em todas as máquinas de desenvolvimento. | Alta |
 | RA002 | Separação entre API e ML | O serviço de ML (FastAPI) deve rodar em container separado da API (Spring Boot), comunicando-se exclusivamente via HTTP. | Alta |
 | RA003 | Interface de armazenamento | O armazenamento dos resultados deve ser implementado via interface, permitindo troca entre implementação local (arquivos) e OCI Object Storage sem alterar o código de negócio. | Alta |
 | RA004 | ML Service stateless | O ml-service não deve manter estado entre requisições; os modelos devem ser carregados na inicialização. | Alta |
 | RA005 | Proxy reverso no frontend | O frontend em produção deve ser servido por Nginx, que faz proxy reverso para a API, eliminando problemas de CORS. | Média |
 | RA006 | Sem autenticação no MVP | O MVP não implementa autenticação; a segurança será adicionada na migração para OCI. | Baixa |
+| RA007 | Modo dev/prod do armazenamento | O sistema deve suportar dois modos de armazenamento controlados por variavel de ambiente: `local` (diretorio local, sem OCI) e `oci` (Object Storage real). Ambos devem ser implementados e compilados desde o MVP. | Alta |
+| RA008 | Health check no ml-service | O ml-service deve expor um endpoint `/ml/health` para verificação de prontidão; o docker compose deve usar `healthcheck` + `condition: service_healthy` para garantir que a API só chame o ml-service após os modelos serem carregados. | Alta |
+| RA009 | Tratamento de timeout do ml-service | A API deve configurar timeout de conexão ao chamar o ml-service e retornar HTTP 504 com código `SERVICO_ML_INDISPONIVEL` em caso de falha. | Alta |
 
 ---
 
