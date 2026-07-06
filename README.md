@@ -3,8 +3,23 @@
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Oracle Cloud](https://img.shields.io/badge/Oracle_Cloud-F80000?style=for-the-badge&logo=oracle&logoColor=white)
-![JSON](https://img.shields.io/badge/JSON-000000?style=for-the-badge&logo=json&logoColor=white)
+
+## Sobre
+
+Sistema de análise de comportamento financeiro com classificação de transações, perfil financeiro e recomendações personalizadas.
+
+```
+docker-compose up
+├── Frontend (React)   :3000  ← Interface do usuário
+├── API (Spring Boot)  :8080  ← Regras de negócio + validação
+└── ML Service (FastAPI):8000 ← Classificação com modelo treinado
+```
+
+---
 
 ## Descrição do projeto 
 
@@ -235,3 +250,95 @@ A arquitetura adotada deverá ser documentada pela equipe.
 ## OCI
 
 A solução deve utilizar pelo menos um serviço OCI como parte obrigatória do projeto.
+
+---
+
+## Estrutura do Projeto
+
+```
+nidus/
+├── backend/                          # Spring Boot (API REST)
+│   ├── Dockerfile
+│   ├── pom.xml
+│   └── src/
+├── ml-service/                       # FastAPI (ML)
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   ├── predictor.py
+│   └── models/                       # Modelos .pkl
+├── frontend/                         # React + Vite
+│   ├── Dockerfile
+│   ├── package.json
+│   ├── nginx.conf
+│   └── src/
+├── notebooks/                        # Notebooks de treinamento
+│   ├── eda.ipynb
+│   └── treinamento.ipynb
+├── docker-compose.yml
+├── docker-compose.test.yml
+└── README.md
+```
+
+---
+
+## Como Executar
+
+### Pré-requisitos
+
+- Docker e Docker Compose instalados
+- Nenhuma outra dependência necessária (Java, Python, Node vêm nas imagens)
+
+### Desenvolvimento
+
+```bash
+# Sobe todos os serviços
+docker-compose up
+
+# Acessar:
+# Frontend: http://localhost:3000
+# API:      http://localhost:8080
+# Swagger:  http://localhost:8080/swagger-ui.html
+```
+
+### Testes
+
+```bash
+# Executa todos os testes (backend + ml-service + frontend)
+docker-compose -f docker-compose.test.yml up --abort-on-container-exit
+
+# Apenas backend
+docker-compose -f docker-compose.test.yml run api
+
+# Apenas ml-service
+docker-compose -f docker-compose.test.yml run ml-service
+
+# Apenas frontend
+docker-compose -f docker-compose.test.yml run frontend
+```
+
+---
+
+## Stack Tecnológica
+
+| Camada | Tecnologia | Finalidade |
+|---|---|---|
+| Frontend | React + Vite + TypeScript | Interface do usuário |
+| API | Java 17 + Spring Boot 3 | Regras de negócio, validação, recomendações |
+| ML Service | Python + FastAPI + Scikit-Learn | Classificação e perfil financeiro |
+| Banco de dados | Nenhum (armazenamento em arquivos JSON) | MVP simula OCI Object Storage |
+| Container | Docker + docker-compose | Ambiente padronizado para toda a equipe |
+| Testes (Java) | JUnit 5 + Mockito + WireMock | Testes unitários e de integração |
+| Testes (Python) | pytest + TestClient | Testes do ml-service |
+| Testes (React) | Vitest + React Testing Library + MSW | Testes do frontend |
+| Cloud | OCI (Object Storage + Compute) | Produção / deploy |
+
+---
+
+## Documentação Complementar
+
+- [Arquitetura](docs/ARQUITETURA.md) - Decisões técnicas, diagramas, estratégia OCI
+- [Contratos de API](docs/CONTRATOS.md) - Endpoints, JSON, códigos de erro
+- [Dicionário de Dados](docs/DICIONARIO.md) - Domínios, regras de normalização, glossário
+- [Frontend](docs/FRONTEND.md) - Componentes, páginas, tipos, fluxo de dados
+- [Requisitos (SRS)](docs/REQUISITOS.md) - Requisitos funcionais e não funcionais
+- [Testes](docs/TESTES.md) - Estratégia, cenários, responsabilidades
