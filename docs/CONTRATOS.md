@@ -29,6 +29,7 @@ Os campos seguem `snake_case`, em português, conforme já estabelecido no exemp
 | 400 | Bad Request | Estrutura da requisição malformada (ex: JSON inválido, campo com tipo incorreto) |
 | 422 | Unprocessable Entity | Estrutura válida, porém com dados semanticamente inválidos (ex: valor negativo, campo obrigatório ausente) |
 | 500 | Internal Server Error | Falha inesperada no processamento interno (ex: falha ao carregar o modelo) |
+| 504 | Gateway Timeout | O ml-service nao respondeu dentro do limite de tempo configurado |
 
 ### 2.4 Estrutura Padrão de Erro
 
@@ -120,10 +121,10 @@ sequenceDiagram
   "resumo_gastos": {
     "alimentacao": 420,
     "transporte": 300,
-    "entretenimento": 40
+    "lazer": 40
   },
   "recomendacoes": [
-    "Monitorar gastos recorrentes de entretenimento",
+    "Monitorar gastos recorrentes de lazer",
     "Aumentar reserva financeira mensal"
   ]
 }
@@ -176,10 +177,10 @@ Saída:
   "resumo_gastos": {
     "alimentacao": 420,
     "transporte": 300,
-    "entretenimento": 40
+    "lazer": 40
   },
   "recomendacoes": [
-    "Monitorar gastos recorrentes de entretenimento",
+    "Monitorar gastos recorrentes de lazer",
     "Aumentar reserva financeira mensal"
   ]
 }
@@ -411,6 +412,7 @@ Saída (422):
 | LISTA_TRANSACOES_VAZIA | 422 | A lista de transações foi enviada sem nenhum item |
 | ENUM_INVALIDO | 422 | Valor informado para um campo do tipo enumerado não pertence ao domínio aceito |
 | FALHA_INTERNA_PROCESSAMENTO | 500 | Erro inesperado durante a execução da análise ou classificação |
+| SERVICO_ML_INDISPONIVEL | 504 | O ml-service nao respondeu ou retornou erro antes de completar a classificacao |
 
 ---
 
@@ -489,12 +491,23 @@ Este contrato define a comunicação entre a API (Spring Boot) e o ML Service (F
 }
 ```
 
-### 7.5 Observações
+### 7.5 Endpoint de Health Check
+
+| Item | Detalhe |
+|---|---|
+| Método | GET |
+| Caminho | /ml/health |
+| Consumidor | API (Spring Boot), docker healthcheck |
+| Resposta (200) | `{ "status": "ok" }` |
+| Resposta (503) | `{ "status": "loading" }` (modelos ainda carregando) |
+
+### 7.6 Observações
 
 - O ML Service é stateless: cada requisição carrega os modelos do disco
 - Os modelos (.pkl) são carregados na inicialização do serviço
 - O endpoint é chamado exclusivamente pela API (Spring Boot), nunca diretamente pelo frontend
 - A URL do ML Service é configurada via variável de ambiente `ML_SERVICE_URL`
+- A API deve tratar timeout de conexão com o ml-service e retornar 504 com `SERVICO_ML_INDISPONIVEL`
 
 ---
 
