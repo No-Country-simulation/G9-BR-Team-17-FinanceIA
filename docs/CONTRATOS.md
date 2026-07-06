@@ -414,7 +414,91 @@ Saída (422):
 
 ---
 
-## 6. Observações de Rastreabilidade
+# Contrato Interno: ML Service
+
+Este contrato define a comunicação entre a API (Spring Boot) e o ML Service (FastAPI). A API chama o ML Service internamente para obter a classificação das transações e do perfil financeiro. O resultado é então enriquecido pela API com recomendações e armazenamento.
+
+---
+
+## 7. Endpoint Interno: Classificação ML
+
+### 7.1 Identificação
+
+| Item | Detalhe |
+|---|---|
+| Método | POST |
+| Caminho | /ml/analise |
+| Consumidor | API (Spring Boot) |
+| Descrição | Recebe os dados financeiros completos e retorna a classificação das transações, o perfil financeiro e a probabilidade associada. |
+
+### 7.2 Contrato de Entrada
+
+```json
+{
+  "renda_mensal": 4500,
+  "nivel_endividamento": 25,
+  "frequencia_poupanca": "Media",
+  "transacoes": [
+    { "descricao": "Supermercado", "valor": 420 },
+    { "descricao": "Combustivel", "valor": 300 }
+  ]
+}
+```
+
+| Campo | Tipo | Obrigatório | Restrições |
+|---|---|---|---|
+| renda_mensal | número decimal | Sim | Deve ser maior que 0 |
+| nivel_endividamento | número decimal | Sim | Deve estar entre 0 e 100 |
+| frequencia_poupanca | string (enum) | Sim | "Nenhuma", "Baixa", "Media", "Alta" |
+| transacoes | lista de objetos | Sim | Mínimo 1 |
+| transacoes[].descricao | string | Sim | 1 a 120 caracteres |
+| transacoes[].valor | número decimal | Sim | Maior que 0 |
+
+### 7.3 Contrato de Saída (sucesso, 200)
+
+```json
+{
+  "perfil_financeiro": "Em observacao",
+  "probabilidade": 0.82,
+  "transacoes_classificadas": [
+    { "descricao": "Supermercado", "valor": 420, "categoria": "Alimentacao" },
+    { "descricao": "Combustivel", "valor": 300, "categoria": "Transporte" }
+  ]
+}
+```
+
+| Campo | Tipo | Descrição |
+|---|---|---|
+| perfil_financeiro | string (enum) | "Saudavel", "Em observacao", "Em risco" |
+| probabilidade | número decimal (0 a 1) | Confiança da classificação |
+| transacoes_classificadas | lista de objetos | Transações com categoria atribuída |
+| transacoes_classificadas[].descricao | string | Descrição original |
+| transacoes_classificadas[].valor | número decimal | Valor original |
+| transacoes_classificadas[].categoria | string | Categoria atribuída (ver domínio no Dicionário) |
+
+### 7.4 Contrato de Erro (422)
+
+```json
+{
+  "erro": {
+    "codigo": "VALOR_TRANSACAO_INVALIDO",
+    "mensagem": "O campo 'valor' da transacao deve ser maior que zero.",
+    "campo": "transacoes[0].valor",
+    "timestamp": "2026-07-06T14:32:10Z"
+  }
+}
+```
+
+### 7.5 Observações
+
+- O ML Service é stateless: cada requisição carrega os modelos do disco
+- Os modelos (.pkl) são carregados na inicialização do serviço
+- O endpoint é chamado exclusivamente pela API (Spring Boot), nunca diretamente pelo frontend
+- A URL do ML Service é configurada via variável de ambiente `ML_SERVICE_URL`
+
+---
+
+## 8. Observações de Rastreabilidade
 
 Cada requisição processada deve gerar um identificador único de execução, conforme estabelecido em RN009 do documento de SRS. Esse identificador não faz parte obrigatória do contrato de resposta ao cliente, mas deve estar disponível internamente para fins de auditoria e depuração, podendo ser exposto futuramente como cabeçalho de resposta, caso definido em documento de arquitetura.
 
