@@ -225,7 +225,50 @@ stateDiagram-v2
 
 ---
 
-## 6. PAPÉIS DE USUÁRIO (PERSONAS/ATORES)
+## 6. REQUISITOS DE ARQUITETURA (RA)
+
+Requisitos derivados das decisões arquiteturais do projeto.
+
+| ID | Nome do Requisito | Descrição | Prioridade |
+|---|---|---|---|
+| RA001 | Containerização com Docker | O sistema deve ser executado em containers Docker orquestrados por docker-compose, garantindo ambiente idêntico em todas as máquinas de desenvolvimento. | Alta |
+| RA002 | Separação entre API e ML | O serviço de ML (FastAPI) deve rodar em container separado da API (Spring Boot), comunicando-se exclusivamente via HTTP. | Alta |
+| RA003 | Interface de armazenamento | O armazenamento dos resultados deve ser implementado via interface, permitindo troca entre implementação local (arquivos) e OCI Object Storage sem alterar o código de negócio. | Alta |
+| RA004 | ML Service stateless | O ml-service não deve manter estado entre requisições; os modelos devem ser carregados na inicialização. | Alta |
+| RA005 | Proxy reverso no frontend | O frontend em produção deve ser servido por Nginx, que faz proxy reverso para a API, eliminando problemas de CORS. | Média |
+| RA006 | Sem autenticação no MVP | O MVP não implementa autenticação; a segurança será adicionada na migração para OCI. | Baixa |
+
+---
+
+## 7. REQUISITOS DE FRONTEND (RFN)
+
+| ID | Nome do Requisito | Descrição | Prioridade |
+|---|---|---|---|
+| RFN001 | Tela de análise financeira | O frontend deve fornecer um formulário com campos para renda mensal, nível de endividamento, frequência de poupança e lista dinâmica de transações, com botão para submeter a análise. | Alta |
+| RFN002 | Exibição do resultado da análise | Após a análise, o frontend deve exibir o perfil financeiro com probabilidade, resumo de gastos por categoria e lista de recomendações. | Alta |
+| RFN003 | Tela de classificação de transações | O frontend deve fornecer um formulário com lista dinâmica de transações e exibir o resultado em tabela com descrição, valor e categoria classificada. | Alta |
+| RFN004 | Tratamento de erros no frontend | O frontend deve exibir erros retornados pela API de forma legível para o usuário, incluindo código do erro e mensagem. | Alta |
+| RFN005 | Estados de carregamento | O frontend deve exibir indicador de carregamento enquanto aguarda resposta da API. | Média |
+| RFN006 | Responsividade | As telas devem ser responsivas, funcionando em dispositivos móveis e desktop. | Média |
+
+---
+
+## 8. REQUISITOS DE TESTES (RT)
+
+| ID | Nome do Requisito | Descrição | Prioridade |
+|---|---|---|---|
+| RT001 | Testes unitários do backend | Toda regra de negócio (classificação de perfil, geração de recomendações, validação) deve possuir testes unitários com JUnit 5 e Mockito. | Alta |
+| RT002 | Testes de integração do backend | Os controllers devem ser testados com WireMock simulando o ml-service, cobrindo cenários de sucesso e erro. | Alta |
+| RT003 | Testes unitários do ml-service | O carregamento dos modelos e a lógica de classificação devem ser testados com pytest. | Alta |
+| RT004 | Testes de integração do ml-service | O endpoint /ml/analise deve ser testado com TestClient do FastAPI, cobrindo validações de entrada e saída. | Alta |
+| RT005 | Testes unitários do frontend | Componentes isolados devem ser testados com Vitest e React Testing Library. | Alta |
+| RT006 | Testes de integração do frontend | As páginas devem ser testadas com MSW simulando a API, cobrindo fluxos de sucesso e erro. | Alta |
+| RT007 | Execução em container | Todos os testes devem executar em container Docker, sem dependência de ferramentas instaladas na máquina host. | Alta |
+| RT008 | Cobertura de cenários de erro do ml-service | Os testes do backend devem simular via WireMock: timeout, 500, 422, resposta malformada, campos faltando. | Média |
+
+---
+
+## 9. PAPÉIS DE USUÁRIO (PERSONAS/ATORES)
 
 | Ator | Descrição | Permissões Gerais |
 |---|---|---|
