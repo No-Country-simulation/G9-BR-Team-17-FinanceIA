@@ -1,6 +1,8 @@
 package com.nidus.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
@@ -16,9 +18,11 @@ public class Analise {
     private Instant criadoEm;
 
     @Column(name = "requisicao", columnDefinition = "JSONB", nullable = false)
+    @JdbcTypeCode(SqlTypes.JSON)
     private String requisicao;
 
     @Column(name = "resposta", columnDefinition = "JSONB", nullable = false)
+    @JdbcTypeCode(SqlTypes.JSON)
     private String resposta;
 
     @Column(name = "perfil_financeiro", length = 20, nullable = false)

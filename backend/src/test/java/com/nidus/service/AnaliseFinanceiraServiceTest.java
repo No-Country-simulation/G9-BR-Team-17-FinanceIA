@@ -27,6 +27,12 @@ class AnaliseFinanceiraServiceTest {
     @Mock
     private GeradorRecomendacoes geradorRecomendacoes;
 
+    @Mock
+    private com.nidus.repository.AnaliseRepository repository;
+
+    @Mock
+    private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
+
     @InjectMocks
     private AnaliseFinanceiraService service;
 
