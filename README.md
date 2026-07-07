@@ -330,7 +330,7 @@ docker compose -f docker-compose.test.yml run frontend
 O sistema suporta dois modos de armazenamento controlados pela variável de ambiente `ARMAZENAMENTO_TIPO`:
 
 | Modo | ARMAZENAMENTO_TIPO | Onde os dados são salvos | Requer OCI? |
-|---|---|---|---|---|
+|---|---|---|---|
 | **Dev** | `local` (default) | H2 em arquivo (`./data/nidus.db`) montado como volume Docker | Não |
 | **Produção** | `autonomous_json` | Oracle Autonomous JSON Database (coleção SODA) | Sim |
 
