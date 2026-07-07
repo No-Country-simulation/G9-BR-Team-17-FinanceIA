@@ -1,12 +1,16 @@
 package com.nidus.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import java.util.List;
 
 public class MlAnaliseRequest {
 
+    @JsonProperty("renda_mensal")
     private BigDecimal rendaMensal;
+    @JsonProperty("nivel_endividamento")
     private BigDecimal nivelEndividamento;
+    @JsonProperty("frequencia_poupanca")
     private String frequenciaPoupanca;
     private List<TransacaoRequest> transacoes;
 

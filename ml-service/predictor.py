@@ -1,6 +1,7 @@
 import joblib
 import logging
 from pathlib import Path
+from sklearn.linear_model import LogisticRegression
 
 logger = logging.getLogger(__name__)
 

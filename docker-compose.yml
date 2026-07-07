@@ -23,7 +23,7 @@ services:
     volumes:
       - ./ml-service/models:/app/models
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/ml/health"]
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/ml/health')\""]
       interval: 5s
       retries: 10
       start_period: 15s

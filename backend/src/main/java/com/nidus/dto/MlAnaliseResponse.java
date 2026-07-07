@@ -1,12 +1,15 @@
 package com.nidus.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import java.util.List;
 
 public class MlAnaliseResponse {
 
+    @JsonProperty("perfil_financeiro")
     private String perfilFinanceiro;
     private BigDecimal probabilidade;
+    @JsonProperty("transacoes_classificadas")
     private List<MlTransacaoClassificada> transacoesClassificadas;
 
     public MlAnaliseResponse() {}
