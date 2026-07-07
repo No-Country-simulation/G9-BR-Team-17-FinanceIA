@@ -102,6 +102,20 @@ public interface Armazenamento {
 - Trocado via variável de ambiente `ARMAZENAMENTO_TIPO`
 - Zero alteração no código de negócio ao migrar
 
+### 2.6 Por que Autonomous JSON Database e não Object Storage?
+
+O edital do hackathon sugere Object Storage como serviço OCI para "armazenamento de modelos ou dados". O projeto optou pelo Autonomous JSON Database (AJD) pelas seguintes razões:
+
+| Critério | AJD (escolhido) | Object Storage |
+|---|---|---|
+| Estrutura | Documentos JSON nativos (SODA) | Blobs (arquivos) |
+| Consulta | Consultas por campo do JSON sem baixar o documento inteiro | Download completo do blob para ler qualquer campo |
+| Modelo de dados | Um documento por análise, estrutura definida (seção 4.3) | Um arquivo `.json` por análise |
+| Complexidade de implementação | Driver SODA para Java, integração direta com Spring Boot | SDK do OCI, upload/download manual |
+| Armazenamento de modelos `.pkl` | (não atende) | (não atende igualmente) |
+
+**Os modelos treinados (.pkl) não são armazenados em serviço OCI nesta versão do MVP.** Eles ficam em volume Docker local (`ml-service/models/`) e são carregados na inicialização do ml-service, conforme RA004. O Object Storage não foi escolhido porque o AJD oferece maior alinhamento com a natureza JSON dos dados do projeto (cada análise é um documento JSON) e porque o armazenamento de `.pkl` em Object Storage exigiria um fluxo de download na inicialização que adicionaria complexidade sem benefício para o prazo do hackathon. Essa decisão está registrada no board de riscos para reavaliação em versões futuras.
+
 ---
 
 ## 3. Estrutura do Projeto

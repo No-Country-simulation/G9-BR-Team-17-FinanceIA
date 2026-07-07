@@ -250,7 +250,7 @@ Requisitos derivados das decisões arquiteturais do projeto.
 | ID | Nome do Requisito | Descrição | Prioridade |
 |---|---|---|---|
 | RFN001 | Tela de análise financeira | O frontend deve fornecer um formulário com campos para renda mensal, nível de endividamento, frequência de poupança e lista dinâmica de transações, com botão para submeter a análise. | Alta |
-| RFN002 | Exibição do resultado da análise | Após a análise, o frontend deve exibir o perfil financeiro com probabilidade, resumo de gastos por categoria e lista de recomendações. | Alta |
+| RFN002 | Exibição do resultado da análise | Após a análise, o frontend deve exibir o perfil financeiro com probabilidade, resumo de gastos por categoria, lista de padrões de consumo identificados e lista de recomendações. | Alta |
 | RFN003 | Tela de classificação de transações | O frontend deve fornecer um formulário com lista dinâmica de transações e exibir o resultado em tabela com descrição, valor e categoria classificada. | Alta |
 | RFN004 | Tratamento de erros no frontend | O frontend deve exibir erros retornados pela API de forma legível para o usuário, incluindo código do erro e mensagem. | Alta |
 | RFN005 | Estados de carregamento | O frontend deve exibir indicador de carregamento enquanto aguarda resposta da API. | Média |

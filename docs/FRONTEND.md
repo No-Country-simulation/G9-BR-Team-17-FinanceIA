@@ -34,6 +34,7 @@ frontend/
 │   │   ├── FormTransacoes.tsx          ← Lista dinâmica de transações
 │   │   ├── ResultadoPerfil.tsx         ← Card com perfil + probabilidade
 │   │   ├── ResumoGastos.tsx            ← Gráfico/tabela de gastos por categoria
+│   │   ├── ListaPadroesConsumo.tsx     ← Lista de padrões de consumo
 │   │   ├── ListaRecomendacoes.tsx      ← Lista de recomendações
 │   │   ├── TabelaClassificacao.tsx     ← Tabela descrição/valor/categoria
 │   │   └── ErrorAlert.tsx             ← Exibição de erros da API
@@ -110,10 +111,17 @@ Rota: `/analise-financeira`
 │  │Alimentaç.│ 420   │          │
 │  │Transporte│ 300   │          │
 │  │Lazer     │ 40    │          │
-│  └──────────┴───────┘          │
+ │  └──────────┴───────┘          │
+│                                 │
+│  Padrões de Consumo             │
+│  • Categoria de maior gasto:    │
+│    Alimentação                  │
+│  • Comprometimento de renda     │
+│    com gastos essenciais: 16%   │
 │                                 │
 │  Recomendações                  │
-│  • Monitorar gastos de lazer    │
+│  • Monitorar gastos recorrentes │
+│    em Alimentação               │
 │  • Aumentar reserva financeira  │
 └─────────────────────────────────┘
 ```
@@ -159,6 +167,7 @@ interface AnaliseFinanceiraResponse {
     perfil_financeiro: "Saudavel" | "Em observacao" | "Em risco";
     probabilidade: number;
     resumo_gastos: Record<string, number>;
+    padroes_identificados: string[];
     recomendacoes: string[];
 }
 

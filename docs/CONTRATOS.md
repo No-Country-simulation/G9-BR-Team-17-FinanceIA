@@ -128,7 +128,7 @@ sequenceDiagram
     "Comprometimento de renda com gastos essenciais: 16%"
   ],
   "recomendacoes": [
-    "Monitorar gastos recorrentes de lazer",
+    "Monitorar gastos recorrentes em Alimentacao",
     "Aumentar reserva financeira mensal"
   ]
 }
@@ -214,7 +214,7 @@ Saída:
     "Comprometimento de renda com gastos essenciais: 16%"
   ],
   "recomendacoes": [
-    "Monitorar gastos recorrentes de lazer",
+    "Monitorar gastos recorrentes em Alimentacao",
     "Aumentar reserva financeira mensal"
   ]
 }
@@ -286,13 +286,16 @@ Saída:
   },
   "padroes_identificados": [
     "Concentracao em Servicos (62% do total gasto)",
-    "Comprometimento de renda com gastos essenciais: 0%",
+    "Comprometimento de renda com gastos essenciais: 18%",
+    "Gastos nao essenciais comprometem 30% da renda",
     "Categoria de maior gasto: Servicos"
   ],
   "recomendacoes": [
-    "Reduzir gastos com aplicativos de transporte",
-    "Priorizar quitacao de dividas com cartao de credito",
-    "Estabelecer meta minima de poupanca mensal"
+    "Priorizar quitacao de dividas para reduzir o comprometimento da renda",
+    "Estabelecer meta minima de poupanca mensal, mesmo que o valor seja pequeno",
+    "Revisar assinaturas e servicos contratados",
+    "Reduzir o nivel de endividamento antes de assumir novos compromissos",
+    "Monitorar gastos recorrentes em Servicos"
   ]
 }
 ```

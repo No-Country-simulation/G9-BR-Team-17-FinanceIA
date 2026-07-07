@@ -177,9 +177,13 @@ Exemplos:
     "transporte": 300, 
     "lazer": 40 
   }, 
-  "recomendacoes": [ 
-    "Monitorar gastos recorrentes de lazer", 
-    "Aumentar reserva financeira mensal" 
+  "padroes_identificados": [
+    "Categoria de maior gasto: Alimentacao",
+    "Comprometimento de renda com gastos essenciais: 16%"
+  ],
+  "recomendacoes": [
+    "Monitorar gastos recorrentes em Alimentacao",
+    "Aumentar reserva financeira mensal"
   ] 
 } 
 ```

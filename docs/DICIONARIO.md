@@ -191,7 +191,7 @@ Cada padrão é calculado a partir das transações classificadas e dos dados fi
 | ID | Padrão | Definição | Regra de Cálculo | Exemplo de Saída |
 |---|---|---|---|---|
 | PC001 | Concentracao de categoria | Categoria que consome parcela desproporcional do total gasto | percentual_categoria = valor_categoria / soma_total_transacoes; concentracao se > 30% | "Concentração em Lazer (35% do total gasto)" |
-| PC002 | Comprometimento de renda por essenciais | Proporção da renda mensal usada em categorias essenciais (Moradia, Saude, Transporte, Educacao) | soma_essenciais / renda_mensal | "Gastos essenciais comprometem 42% da renda" |
+| PC002 | Comprometimento de renda por essenciais | Proporção da renda mensal usada em categorias essenciais (Alimentacao, Moradia, Saude, Transporte, Educacao) | soma_essenciais / renda_mensal | "Gastos essenciais comprometem 42% da renda" |
 | PC003 | Comprometimento de renda por nao essenciais | Proporção da renda usada em Lazer e Servicos | soma_nao_essenciais / renda_mensal | "Gastos não essenciais comprometem 8% da renda" |
 | PC004 | Gasto recorrente | Descrição de transação repetida (normalizada, seção 7) mais de uma vez na mesma requisição | contagem_descricao_normalizada > 1 | "Padrão recorrente: Streaming (2 ocorrências)" |
 | PC005 | Transacao atipica | Transação cujo valor é muito superior à média das demais | valor > (media_transacoes * 2) | "Transação atípica: Viagem (valor muito acima da média)" |
