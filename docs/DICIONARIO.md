@@ -182,7 +182,31 @@ Toda recomendação gerada deve estar vinculada a um indicador identificado na a
 
 ---
 
-## 10. Glossário de Termos do Domínio
+## 10. Dominio: Padroes de Consumo
+
+### 10.1 Definicao dos Padroes
+
+Cada padrao e calculado a partir das transacoes classificadas e dos dados financeiros de entrada, dentro de uma unica requisicao.
+
+| ID | Padrao | Definicao | Regra de Calculo | Exemplo de Saida |
+|---|---|---|---|---|
+| PC001 | Concentracao de categoria | Categoria que consome parcela desproporcional do total gasto | percentual_categoria = valor_categoria / soma_total_transacoes; concentracao se > 30% | "Concentracao em Lazer (35% do total gasto)" |
+| PC002 | Comprometimento de renda por essenciais | Proporcao da renda mensal usada em categorias essenciais (Moradia, Saude, Transporte, Educacao) | soma_essenciais / renda_mensal | "Gastos essenciais comprometem 42% da renda" |
+| PC003 | Comprometimento de renda por nao essenciais | Proporcao da renda usada em Lazer e Servicos | soma_nao_essenciais / renda_mensal | "Gastos nao essenciais comprometem 8% da renda" |
+| PC004 | Gasto recorrente | Descricao de transacao repetida (normalizada, secao 7) mais de uma vez na mesma requisicao | contagem_descricao_normalizada > 1 | "Padrao recorrente: Streaming (2 ocorrencias)" |
+| PC005 | Transacao atipica | Transacao cujo valor e muito superior a media das demais | valor > (media_transacoes * 2) | "Transacao atipica: Viagem (valor muito acima da media)" |
+| PC006 | Categoria dominante | Categoria com maior soma de valor entre todas | max(resumo_gastos) | "Categoria de maior gasto: Alimentacao" |
+
+### 10.2 Regras de Ativacao dos Padroes
+
+- Um padrao so e considerado "identificado" quando sua regra de calculo e atendida
+- Podem ser ativados multiplos padroes em uma mesma analise
+- A lista de padroes identificados e exposta no campo `padroes_identificados` da resposta (ver CONTRATOS.md)
+- Todo padrao ativado deve gerar ao menos uma recomendacao vinculada (RN004), mas nem toda recomendacao precisa derivar de um padrao (ex: REC001 deriva do perfil, nao de um padrao especifico)
+
+---
+
+## 11. Glossario de Termos do Dominio
 
 | Termo | Definição |
 |---|---|
