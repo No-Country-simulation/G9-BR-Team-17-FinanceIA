@@ -68,6 +68,11 @@ class AnalisadorPerfilFinanceiroTest {
 | `AnaliseValidator` | frequencia_poupanca com erro de digitacao | "Mediaa" | Erro ENUM_INVALIDO |
 | `GeradorRecomendacoes` | Descricao "Farmacia e Conveniencia" | - | Priorizar Saude (regra de desambiguacao 3.3) |
 | `GeradorRecomendacoes` | Transacoes com descricao duplicada | Lista ["Supermercado", "Supermercado"] | Cada uma classificada independentemente |
+| `IdentificadorPadroesConsumo` | Concentracao de categoria | Lazer = 40% do total gasto | PC001 presente |
+| `IdentificadorPadroesConsumo` | Sem concentracao | Gastos distribuidas igualmente entre 4 categorias | Nenhum PC001 |
+| `IdentificadorPadroesConsumo` | Gasto recorrente | Duas transacoes "Streaming" e "STREAMING " (normalizacao) | PC004 presente (uma vez) |
+| `IdentificadorPadroesConsumo` | Transacao atipica | Uma transacao com valor 10x a media das demais | PC005 presente |
+| `IdentificadorPadroesConsumo` | Comprometimento essencial alto | Moradia + Saude > 50% da renda | PC002 retornado com valor > 50% |
 
 ### 2.2 Testes de Integração (WireMock)
 
