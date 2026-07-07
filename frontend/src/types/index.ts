@@ -34,3 +34,14 @@ export interface ErroResponse {
     timestamp: string;
   };
 }
+
+export interface HistoricoItem {
+  id: string;
+  criadoEm: string;
+  perfilFinanceiro: string;
+  resumoGastos: Record<string, number>;
+}
+
+export interface HistoricoResponse {
+  analises: HistoricoItem[];
+}

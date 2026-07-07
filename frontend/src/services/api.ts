@@ -4,6 +4,7 @@ import type {
   ClassificacaoTransacoesRequest,
   ClassificacaoTransacoesResponse,
   ErroResponse,
+  HistoricoResponse,
 } from "../types";
 
 const API_BASE = "/api";
@@ -33,4 +34,15 @@ export async function classificarTransacoes(
   dados: ClassificacaoTransacoesRequest
 ): Promise<ClassificacaoTransacoesResponse> {
   return request<ClassificacaoTransacoesResponse>("/classificacao-transacoes", dados);
+}
+
+export async function getHistorico(): Promise<HistoricoResponse> {
+  const response = await fetch(`${API_BASE}/historico-analises`);
+
+  if (!response.ok) {
+    const erro: ErroResponse = await response.json();
+    throw erro;
+  }
+
+  return response.json();
 }

@@ -20,6 +20,10 @@ export default function Layout({ children }: LayoutProps) {
         <Link to="/classificacao-transacoes" style={{ textDecoration: "none", color: "#555" }}>
           Classificação de Transações
         </Link>
+        <span style={{ margin: "0 0.5rem" }}>|</span>
+        <Link to="/historico-analises" style={{ textDecoration: "none", color: "#555" }}>
+          Histórico
+        </Link>
       </nav>
       <main style={{ maxWidth: "800px", margin: "0 auto", padding: "0 1rem" }}>
         {children}
