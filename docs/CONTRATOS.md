@@ -653,7 +653,9 @@ Resposta (200):
 
 ## 9. Observações de Rastreabilidade
 
-Cada requisição processada deve gerar um identificador único de execução, conforme estabelecido em RN009 do documento de SRS. Esse identificador não faz parte obrigatória do contrato de resposta ao cliente, mas deve estar disponível internamente para fins de auditoria e depuração, podendo ser exposto futuramente como cabeçalho de resposta, caso definido em documento de arquitetura.
+Cada requisição processada deve gerar um identificador único de execução, conforme estabelecido em RN009 do documento de SRS. Esse identificador não faz parte obrigatória do contrato de resposta ao cliente, mas deve estar disponível internamente para fins de auditoria e depuração.
+
+**Definição de geração:** um UUID v4 é gerado no controller da API (Spring Boot) no momento em que a requisição é recebida, antes de qualquer validação ou processamento. Esse UUID é armazenado juntamente com a análise no campo `id` do documento da coleção SODA (ARQUITETURA.md seção 4.3) e pode ser exposto futuramente como cabeçalho de resposta `X-Request-Id`, caso definido em versão futura do sistema.
 
 ---
 

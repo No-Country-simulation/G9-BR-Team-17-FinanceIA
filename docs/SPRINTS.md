@@ -78,7 +78,7 @@ gantt
     Docker dev e board de tarefas         :i1, 2026-07-06, 7d
     WireMock e testes unitarios            :i2, after i1, 7d
     Testes de integracao completos         :i3, after i2, 7d
-    Setup real do bucket OCI                :i4, after i3, 7d
+    Setup real do AJD (Oracle Autonomous DB)  :i4, after i3, 7d
     section Time todo
     Testes finais e polimento              :t1, 2026-08-03, 7d
     Ensaio de apresentacao e buffer         :t2, after t1, 7d
@@ -126,11 +126,11 @@ Critério de saída da sprint: o endpoint `/analise-financeira` funciona de pont
 | Squad | Entregas da semana |
 |---|---|
 | Backend | Implementação da interface de Armazenamento nos modos local e OCI, configuração das variáveis de ambiente |
-| Infra e QA | Criação do bucket OCI real, geração de credenciais, teste manual de upload e download |
+| Infra e QA | Criação do Autonomous JSON Database real, download da wallet, teste manual de conexão via SODA |
 | Dados | Ajuste fino do modelo com base nos testes reais, início da explicabilidade se houver tempo disponível |
 | Frontend | Tratamento de erro no cliente, estados de carregamento, responsividade |
 
-Critério de saída da sprint: a alternância entre `ARMAZENAMENTO_TIPO=local` e `oci` funciona de forma comprovada, não apenas codificada.
+Critério de saída da sprint: a alternância entre `ARMAZENAMENTO_TIPO=local` e `autonomous_json` funciona de forma comprovada, não apenas codificada.
 
 ### Sprint 5, semana 5: Testes e consolidação
 
