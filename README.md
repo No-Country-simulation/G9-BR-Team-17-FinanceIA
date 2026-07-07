@@ -357,4 +357,6 @@ Durante o desenvolvimento, todos os membros da equipe rodam em modo `local`. Nen
 - [Dicionário de Dados](docs/DICIONARIO.md) - Domínios, regras de normalização, glossário
 - [Frontend](docs/FRONTEND.md) - Componentes, páginas, tipos, fluxo de dados
 - [Requisitos (SRS)](docs/REQUISITOS.md) - Requisitos funcionais e não funcionais
+- [Sprints](docs/SPRINTS.md) - Plano de execução, squads, cronograma
+- [Ciência de Dados](docs/DADOS.md) - Dataset, modelagem, métricas, serialização
 - [Testes](docs/TESTES.md) - Estratégia, cenários, responsabilidades
