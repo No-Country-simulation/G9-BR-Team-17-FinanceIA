@@ -1,0 +1,8 @@
+{
+    "perfil_financeiro": "Saudavel",
+    "probabilidade": 0.91,
+    "transacoes_classificadas": [
+        { "descricao": "Aluguel", "valor": 1500, "categoria": "Moradia" },
+        { "descricao": "Farmacia", "valor": 120, "categoria": "Saude" }
+    ]
+}

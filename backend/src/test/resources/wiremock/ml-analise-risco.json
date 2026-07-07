@@ -1,0 +1,9 @@
+{
+    "perfil_financeiro": "Em risco",
+    "probabilidade": 0.88,
+    "transacoes_classificadas": [
+        { "descricao": "Cartao de credito", "valor": 900, "categoria": "Servicos" },
+        { "descricao": "Uber", "valor": 250, "categoria": "Transporte" },
+        { "descricao": "Delivery", "valor": 300, "categoria": "Alimentacao" }
+    ]
+}

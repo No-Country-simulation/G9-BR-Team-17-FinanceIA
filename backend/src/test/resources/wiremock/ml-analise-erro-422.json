@@ -1,0 +1,8 @@
+{
+    "erro": {
+        "codigo": "VALOR_TRANSACAO_INVALIDO",
+        "mensagem": "O campo 'valor' da transacao deve ser maior que zero.",
+        "campo": "transacoes[0].valor",
+        "timestamp": "2026-07-06T14:32:10Z"
+    }
+}

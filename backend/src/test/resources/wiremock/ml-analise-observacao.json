@@ -1,0 +1,9 @@
+{
+    "perfil_financeiro": "Em observacao",
+    "probabilidade": 0.82,
+    "transacoes_classificadas": [
+        { "descricao": "Supermercado", "valor": 420, "categoria": "Alimentacao" },
+        { "descricao": "Combustivel", "valor": 300, "categoria": "Transporte" },
+        { "descricao": "Streaming", "valor": 40, "categoria": "Lazer" }
+    ]
+}

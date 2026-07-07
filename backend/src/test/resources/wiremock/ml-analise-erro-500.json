@@ -1,0 +1,8 @@
+{
+    "erro": {
+        "codigo": "FALHA_INTERNA_PROCESSAMENTO",
+        "mensagem": "Erro inesperado no servico de ML",
+        "campo": null,
+        "timestamp": "2026-07-06T14:32:10Z"
+    }
+}
