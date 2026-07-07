@@ -123,6 +123,10 @@ sequenceDiagram
     "transporte": 300,
     "lazer": 40
   },
+  "padroes_identificados": [
+    "Categoria de maior gasto: Alimentacao",
+    "Comprometimento de renda com gastos essenciais: 16%"
+  ],
   "recomendacoes": [
     "Monitorar gastos recorrentes de lazer",
     "Aumentar reserva financeira mensal"
@@ -135,6 +139,7 @@ sequenceDiagram
 | perfil_financeiro | string (enum) | Um dos valores: "Saudavel", "Em observacao", "Em risco" |
 | probabilidade | número decimal (0 a 1) | Nível de confiança da classificação do perfil |
 | resumo_gastos | objeto (chave dinâmica) | Mapa de categoria de despesa para valor total agregado. Somente categorias com transações presentes são exibidas (conforme RN de omissão de categorias vazias) |
+| padroes_identificados | lista de string | Lista de padrões de consumo identificados na análise (ver domínio no DICIONARIO.md). Cada string segue formato descritivo definido na seção 10. Pode ser vazia se nenhum padrão for detectado. |
 | recomendacoes | lista de string | Uma ou mais recomendações objetivas, vinculadas aos indicadores identificados |
 
 ### 3.4 Fluxo de Decisão Interna (visão conceitual)
@@ -145,10 +150,35 @@ flowchart TD
     B -- Invalido --> C[Retornar 400/422 com erro estruturado]
     B -- Valido --> D[Classificar cada transacao por categoria]
     D --> E[Agregar resumo de gastos por categoria]
-    E --> F[Calcular indicadores: comprometimento de renda, padrao de poupanca]
-    F --> G[Classificar perfil financeiro + probabilidade]
-    G --> H[Gerar recomendacoes vinculadas aos indicadores]
-    H --> I[Retornar 200 com corpo de resposta]
+    E --> F[Identificar padroes de consumo]
+    F --> G[Calcular indicadores: comprometimento de renda, padrao de poupanca]
+    G --> H[Classificar perfil financeiro + probabilidade]
+    H --> I[Gerar recomendacoes vinculadas aos indicadores e padroes]
+    I --> J[Retornar 200 com corpo de resposta]
+```
+
+### 3.4.1 Fluxo de Identificacao de Padroes de Consumo
+
+```mermaid
+flowchart TD
+    A[Transacoes classificadas por categoria] --> B[Calcular percentual por categoria]
+    B --> C{Categoria > 30% do total?}
+    C -- Sim --> D[Registrar padrao PC001: concentracao]
+    C -- Nao --> E[Sem concentracao]
+    B --> F[Calcular essenciais vs nao essenciais]
+    F --> G[Registrar padrao PC002/PC003: comprometimento]
+    A --> H{Descricao normalizada repetida?}
+    H -- Sim --> I[Registrar padrao PC004: recorrencia]
+    A --> J{Valor > 2x a media?}
+    J -- Sim --> K[Registrar padrao PC005: atipica]
+    A --> L[Categoria com maior soma]
+    L --> M[Registrar padrao PC006: categoria dominante]
+    D --> N[Lista consolidada de padroes identificados]
+    G --> N
+    I --> N
+    K --> N
+    M --> N
+    N --> O[Utilizada por: classificacao de perfil e geracao de recomendacoes]
 ```
 
 ### 3.5 Exemplos Reais de Utilização
@@ -179,6 +209,10 @@ Saída:
     "transporte": 300,
     "lazer": 40
   },
+  "padroes_identificados": [
+    "Categoria de maior gasto: Alimentacao",
+    "Comprometimento de renda com gastos essenciais: 16%"
+  ],
   "recomendacoes": [
     "Monitorar gastos recorrentes de lazer",
     "Aumentar reserva financeira mensal"
@@ -186,7 +220,7 @@ Saída:
 }
 ```
 
-**Exemplo 2: Perfil "Saudável"**
+**Exemplo 2: Perfil "Saudavel"**
 
 Entrada:
 ```json
@@ -202,7 +236,7 @@ Entrada:
 }
 ```
 
-Saída:
+Saida:
 ```json
 {
   "perfil_financeiro": "Saudavel",
@@ -212,6 +246,11 @@ Saída:
     "saude": 120,
     "educacao": 200
   },
+  "padroes_identificados": [
+    "Categoria de maior gasto: Moradia",
+    "Comprometimento de renda com gastos essenciais: 22%",
+    "Gastos nao essenciais comprometem 0% da renda"
+  ],
   "recomendacoes": [
     "Manter o padrao atual de poupanca",
     "Considerar reserva de emergencia adicional"
@@ -245,6 +284,11 @@ Saída:
     "transporte": 250,
     "alimentacao": 300
   },
+  "padroes_identificados": [
+    "Concentracao em Servicos (62% do total gasto)",
+    "Comprometimento de renda com gastos essenciais: 0%",
+    "Categoria de maior gasto: Servicos"
+  ],
   "recomendacoes": [
     "Reduzir gastos com aplicativos de transporte",
     "Priorizar quitacao de dividas com cartao de credito",
