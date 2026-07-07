@@ -10,7 +10,7 @@ import ErrorAlert from "../components/ErrorAlert";
 
 export default function AnaliseFinanceira() {
   const [rendaMensal, setRendaMensal] = useState("");
-  const [nivelEndividamento, setNivelEndividamento] = useState("");
+  const [nivelEndividamento, setNivelEndividamento] = useState("0");
   const [frequenciaPoupanca, setFrequenciaPoupanca] = useState("Media");
   const [transacoes, setTransacoes] = useState<Transacao[]>([]);
   const [resultado, setResultado] = useState<AnaliseFinanceiraResponse | null>(null);
@@ -44,7 +44,7 @@ export default function AnaliseFinanceira() {
     setErro("");
     setTransacoes([]);
     setRendaMensal("");
-    setNivelEndividamento("");
+    setNivelEndividamento("0");
     setFrequenciaPoupanca("Media");
   }
 
