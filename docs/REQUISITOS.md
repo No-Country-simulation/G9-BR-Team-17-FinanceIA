@@ -87,13 +87,15 @@ flowchart TD
 
 ### 3.1 Segurança
 
-| ID | Requisito | Critério de Sucesso |
-|---|---|---|
-| RNF-SEG-001 | Proteção de dados financeiros em trânsito | Toda comunicação entre o cliente e o sistema deve ocorrer por canal criptografado, impedindo a leitura dos dados por terceiros durante a transmissão. |
-| RNF-SEG-002 | Proteção de dados financeiros armazenados | Dados financeiros persistidos (quando aplicável) devem estar protegidos por criptografia em repouso. |
-| RNF-SEG-003 | Controle de acesso às interfaces de serviço | O acesso às interfaces de serviço deve ser restrito a consumidores autorizados, mediante mecanismo de autenticação e autorização. |
-| RNF-SEG-004 | Minimização de exposição de dados sensíveis em erros | Mensagens de erro não devem expor dados financeiros sensíveis do usuário, como valores exatos de renda ou identificadores pessoais. |
-| RNF-SEG-005 | Registro de auditoria | Toda solicitação de análise deve ser registrada com identificador único, permitindo rastreabilidade sem exposição de dados sensíveis nos registros. |
+> Os requisitos abaixo são previstos para versão pós-MVP. O MVP não implementa autenticação, HTTPS ou criptografia em repouso, operando em rede local sem exposição externa.
+
+| ID | Requisito | Critério de Sucesso | Prioridade no MVP |
+|---|---|---|---|
+| RNF-SEG-001 | Proteção de dados financeiros em trânsito | Toda comunicação entre o cliente e o sistema deve ocorrer por canal criptografado, impedindo a leitura dos dados por terceiros durante a transmissão. | Pós-MVP |
+| RNF-SEG-002 | Proteção de dados financeiros armazenados | Dados financeiros persistidos (quando aplicável) devem estar protegidos por criptografia em repouso. | Pós-MVP |
+| RNF-SEG-003 | Controle de acesso às interfaces de serviço | O acesso às interfaces de serviço deve ser restrito a consumidores autorizados, mediante mecanismo de autenticação e autorização. | Pós-MVP |
+| RNF-SEG-004 | Minimização de exposição de dados sensíveis em erros | Mensagens de erro não devem expor dados financeiros sensíveis do usuário, como valores exatos de renda ou identificadores pessoais. | Alta |
+| RNF-SEG-005 | Registro de auditoria | Toda solicitação de análise deve ser registrada com identificador único, permitindo rastreabilidade sem exposição de dados sensíveis nos registros. | Alta |
 
 ### 3.2 Desempenho
 
@@ -234,11 +236,11 @@ Requisitos derivados das decisões arquiteturais do projeto.
 |---|---|---|---|
 | RA001 | Containerização com Docker | O sistema deve ser executado em containers Docker orquestrados por docker compose, garantindo ambiente idêntico em todas as máquinas de desenvolvimento. | Alta |
 | RA002 | Separação entre API e ML | O serviço de ML (FastAPI) deve rodar em container separado da API (Spring Boot), comunicando-se exclusivamente via HTTP. | Alta |
-| RA003 | Interface de armazenamento | O armazenamento dos resultados deve ser implementado via interface, permitindo troca entre implementação local (H2) e Oracle Autonomous JSON Database (AJD) sem alterar o código de negócio. | Alta |
+| RA003 | Banco de dados único (PostgreSQL) | O armazenamento dos resultados deve ser feito em PostgreSQL, utilizando o mesmo banco em desenvolvimento e produção, com acesso via JPA no Spring Boot. | Alta |
 | RA004 | ML Service stateless | O ml-service não deve manter estado entre requisições; os modelos devem ser carregados na inicialização. | Alta |
 | RA005 | Proxy reverso no frontend | O frontend em produção deve ser servido por Nginx, que faz proxy reverso para a API, eliminando problemas de CORS. | Média |
 | RA006 | Sem autenticação no MVP | O MVP não implementa autenticação; a segurança será adicionada na migração para OCI. | Baixa |
-| RA007 | Modo dev/prod do armazenamento | O sistema deve suportar dois modos de armazenamento controlados por variavel de ambiente: `local` (H2 em arquivo, sem nuvem) e `autonomous_json` (AJD real com wallet). Ambos devem ser implementados e compilados desde o MVP. | Alta |
+| RA007 | Ambiente único de armazenamento | O sistema deve utilizar PostgreSQL tanto em desenvolvimento quanto em produção, eliminando a necessidade de alternância de configuração ou implementação. O mesmo `docker-compose.yml` funciona em ambos os ambientes. | Alta |
 | RA008 | Health check no ml-service | O ml-service deve expor um endpoint `/ml/health` para verificação de prontidão; o docker compose deve usar `healthcheck` + `condition: service_healthy` para garantir que a API só chame o ml-service após os modelos serem carregados. | Alta |
 | RA009 | Tratamento de timeout do ml-service | A API deve configurar timeout de conexão ao chamar o ml-service e retornar HTTP 504 com código `SERVICO_ML_INDISPONIVEL` em caso de falha. | Alta |
 
@@ -278,7 +280,7 @@ Requisitos derivados das decisões arquiteturais do projeto.
 |---|---|---|
 | Usuário Final (Pessoa Física) | Indivíduo que deseja compreender seus hábitos financeiros e receber recomendações pessoais. Pode interagir diretamente com o sistema ou por meio de uma aplicação parceira. | Enviar dados financeiros próprios para análise; consultar resultados de suas próprias análises; consultar histórico de análises próprias (quando disponível). |
 | Sistema Cliente Integrador (Aplicativo Financeiro / Carteira Digital / Plataforma de Educação Financeira) | Aplicação de terceiros que consome as interfaces de serviço para oferecer a análise financeira dentro de seu próprio produto. | Enviar solicitações de análise em nome de seus usuários finais; consultar contratos de serviço documentados; receber respostas estruturadas para exibição em sua própria interface. |
-| Administrador / Mantenedor do Sistema | Responsável pela manutenção das regras de classificação, atualização do modelo analítico e definição de novas categorias financeiras ou de perfil. | Atualizar critérios de classificação e de perfil financeiro; gerenciar versões do modelo analítico; consultar métricas de desempenho e uso do sistema; não possui acesso irrestrito aos dados financeiros individuais dos usuários finais. |
-| Operador de Suporte | Responsável por monitorar o funcionamento do sistema e auxiliar na resolução de incidentes relatados por usuários ou plataformas integradoras. | Consultar registros de auditoria não sensíveis; acompanhar disponibilidade e desempenho do sistema; escalar falhas técnicas ao administrador; sem permissão para alterar regras de classificação ou modelo analítico. |
+| Administrador / Mantenedor do Sistema (previsto para pós-MVP) | Responsável pela manutenção das regras de classificação, atualização do modelo analítico e definição de novas categorias financeiras ou de perfil. | Atualizar critérios de classificação e de perfil financeiro; gerenciar versões do modelo analítico; consultar métricas de desempenho e uso do sistema; não possui acesso irrestrito aos dados financeiros individuais dos usuários finais. |
+| Operador de Suporte (previsto para pós-MVP) | Responsável por monitorar o funcionamento do sistema e auxiliar na resolução de incidentes relatados por usuários ou plataformas integradoras. | Consultar registros de auditoria não sensíveis; acompanhar disponibilidade e desempenho do sistema; escalar falhas técnicas ao administrador; sem permissão para alterar regras de classificação ou modelo analítico. |
 
 ---

@@ -467,11 +467,13 @@ Saída (422):
 
 Este contrato define a comunicação entre a API (Spring Boot) e o ML Service (FastAPI). A API chama o ML Service internamente para obter a classificação das transações e do perfil financeiro. O resultado é então enriquecido pela API com recomendações e armazenamento.
 
+A validação de entrada é feita primariamente pela API (Spring Boot) com Bean Validation. O ml-service pode assumir que os dados recebidos já foram validados, simplificando sua lógica. Em caso de inconsistência, o ml-service retorna erro 422 com a mesma estrutura do catálogo de erros.
+
 ---
 
-## 7. Endpoint Interno: Classificação ML
+## 6. Endpoint Interno: Classificação ML
 
-### 7.1 Identificação
+### 6.1 Identificação
 
 | Item | Detalhe |
 |---|---|
@@ -480,7 +482,7 @@ Este contrato define a comunicação entre a API (Spring Boot) e o ML Service (F
 | Consumidor | API (Spring Boot) |
 | Descrição | Recebe os dados financeiros completos e retorna a classificação das transações, o perfil financeiro e a probabilidade associada. |
 
-### 7.2 Contrato de Entrada
+### 6.2 Contrato de Entrada
 
 ```json
 {
@@ -503,7 +505,7 @@ Este contrato define a comunicação entre a API (Spring Boot) e o ML Service (F
 | transacoes[].descricao | string | Sim | 1 a 120 caracteres |
 | transacoes[].valor | número decimal | Sim | Maior que 0 |
 
-### 7.3 Contrato de Saída (sucesso, 200)
+### 6.3 Contrato de Saída (sucesso, 200)
 
 ```json
 {
@@ -525,7 +527,7 @@ Este contrato define a comunicação entre a API (Spring Boot) e o ML Service (F
 | transacoes_classificadas[].valor | número decimal | Valor original |
 | transacoes_classificadas[].categoria | string | Categoria atribuída (ver domínio no Dicionário) |
 
-### 7.4 Contrato de Erro (422)
+### 6.4 Contrato de Erro (422)
 
 ```json
 {
@@ -538,7 +540,7 @@ Este contrato define a comunicação entre a API (Spring Boot) e o ML Service (F
 }
 ```
 
-### 7.5 Endpoint de Health Check
+### 6.5 Endpoint de Health Check
 
 | Item | Detalhe |
 |---|---|
@@ -548,19 +550,20 @@ Este contrato define a comunicação entre a API (Spring Boot) e o ML Service (F
 | Resposta (200) | `{ "status": "ok" }` |
 | Resposta (503) | `{ "status": "loading" }` (modelos ainda carregando) |
 
-### 7.6 Observações
+### 6.6 Observações
 
 - O ML Service é stateless: cada requisição carrega os modelos do disco
 - Os modelos (.pkl) são carregados na inicialização do serviço
 - O endpoint é chamado exclusivamente pela API (Spring Boot), nunca diretamente pelo frontend
 - A URL do ML Service é configurada via variável de ambiente `ML_SERVICE_URL`
 - A API deve tratar timeout de conexão com o ml-service e retornar 504 com `SERVICO_ML_INDISPONIVEL`
+- A API não revalida campos que já foram validados na camada de entrada (Bean Validation), reduzindo processamento duplicado
 
 ---
 
-## 8. Endpoint: Histórico de Análises
+## 7. Endpoint: Histórico de Análises
 
-### 8.1 Identificação
+### 7.1 Identificação
 
 | Item | Detalhe |
 |---|---|
@@ -568,7 +571,7 @@ Este contrato define a comunicação entre a API (Spring Boot) e o ML Service (F
 | Caminho | /historico-analises |
 | Descrição | Retorna a lista das análises financeiras realizadas anteriormente, ordenadas da mais recente para a mais antiga. |
 
-### 8.2 Contrato de Saída (sucesso, 200)
+### 7.2 Contrato de Saída (sucesso, 200)
 
 ```json
 {
@@ -595,7 +598,7 @@ Este contrato define a comunicação entre a API (Spring Boot) e o ML Service (F
 | analises[].perfil_financeiro | string (enum) | Perfil classificado na análise: "Saudavel", "Em observacao", "Em risco" |
 | analises[].resumo_gastos | objeto (chave dinâmica) | Mapa de categoria de despesa para valor total agregado |
 
-### 8.3 Exemplos Reais de Utilização
+### 7.3 Exemplos Reais de Utilização
 
 **Exemplo 1: Com análises anteriores**
 
@@ -646,19 +649,19 @@ Resposta (200):
 }
 ```
 
-### 8.4 Observações
+### 7.4 Observações
 
 - O limite máximo de análises retornadas é definido por configuração padrão (ex: 20)
-- A listagem considera apenas as análises armazenadas localmente (H2 em dev, AJD em prod)
+- A listagem consulta as análises armazenadas no PostgreSQL (mesmo banco em dev e prod)
 - Este endpoint depende da implementação de RF014 (registro automático de análises no armazenamento)
 
 ---
 
-## 9. Observações de Rastreabilidade
+## 8. Observações de Rastreabilidade
 
 Cada requisição processada deve gerar um identificador único de execução, conforme estabelecido em RN009 do documento de SRS. Esse identificador não faz parte obrigatória do contrato de resposta ao cliente, mas deve estar disponível internamente para fins de auditoria e depuração.
 
-**Definição de geração:** um UUID v4 é gerado no controller da API (Spring Boot) no momento em que a requisição é recebida, antes de qualquer validação ou processamento. Esse UUID é armazenado juntamente com a análise no campo `id` do documento da coleção SODA (ARQUITETURA.md seção 4.3) e pode ser exposto futuramente como cabeçalho de resposta `X-Request-Id`, caso definido em versão futura do sistema.
+**Definição de geração:** um UUID v4 é gerado no controller da API (Spring Boot) no momento em que a requisição é recebida, antes de qualquer validação ou processamento. Esse UUID é armazenado como chave primária da análise no banco PostgreSQL e pode ser exposto futuramente como cabeçalho de resposta `X-Request-Id`, caso definido em versão futura do sistema.
 
 ---
 
