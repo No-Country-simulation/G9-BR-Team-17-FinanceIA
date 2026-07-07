@@ -1,0 +1,38 @@
+# Java / Maven
+backend/target/
+*.class
+*.jar
+*.war
+
+# Python
+ml-service/.venv/
+ml-service/__pycache__/
+ml-service/.pytest_cache/
+*.pyc
+*.pyo
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/public/mockServiceWorker.js
+
+# Jupyter
+notebooks/.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+postgres_data/
+
+# Env
+.env
+.env.local
